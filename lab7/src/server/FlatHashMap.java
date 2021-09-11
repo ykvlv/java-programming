@@ -7,15 +7,12 @@ import common.forFlat.Flat;
 import java.io.*;
 import java.lang.reflect.Type;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class FlatHashMap {
     private final HashMap<Integer, Flat> flats;
     private final String fileName;
-    private final ArrayList<Integer> ids = new ArrayList<>();
+    private final HashSet<Integer> ids = new HashSet<>();
     private final LocalDateTime initTime;
 
     public FlatHashMap(LocalDateTime initTime, String fileName) throws IOException {
@@ -51,11 +48,9 @@ public class FlatHashMap {
 
     public void remove(int key) {
         System.out.println(ids);
-        System.out.println(flats.get(key).getId());
-        //короче может в аргументе дело
         ids.remove(flats.get(key).getId());
         flats.remove(key);
-
+        System.out.println(ids);
     }
 
     public boolean containsKey(int key) {

@@ -2,7 +2,12 @@ package server.command;
 
 import common.Response;
 import common.ResponseType;
+import common.forFlat.Flat;
 import server.FlatHashMap;
+
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class RemoveLowerKeyCommand implements Command {
     private final FlatHashMap flatHashMap;
@@ -22,9 +27,13 @@ public class RemoveLowerKeyCommand implements Command {
         } catch (NumberFormatException e) {
             return new Response(ResponseType.ERROR, "Ключ должен быть числом.");
         }
-        flatHashMap.getFlats().entrySet().stream()
-                .filter(entry -> entry.getKey() < key)
-                .forEach(entry -> flatHashMap.remove(entry.getKey()));
+        //Множество ключей которые надо будет удалить
+        Set<Integer> collect = flatHashMap.getFlats().keySet().stream()
+                .filter(flat -> flat < key)
+                .collect(Collectors.toSet());
+        for (Integer illiquidKey : collect) {
+            flatHashMap.remove(illiquidKey);
+        }
         return new Response(ResponseType.DONE, "Удаление прошло успешно");
     }
 
