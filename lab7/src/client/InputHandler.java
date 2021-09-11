@@ -41,11 +41,14 @@ public class InputHandler {
     public Long requestLong(boolean mayBeNull) throws InterruptedIOException {
         while (true) {
             try {
-                return Long.parseLong(requestString(mayBeNull));
+                String string = requestString(mayBeNull);
+                if (string == null) {
+                    return null;
+                } else {
+                    return Long.parseLong(string);
+                }
             } catch (NumberFormatException e) {
-                System.err.println("Ошибка парсинга Long.");
-            } catch (NullPointerException e) {
-                return null;
+                System.err.println("Ошибка парсинга Integer.");
             }
         }
     }
@@ -53,11 +56,14 @@ public class InputHandler {
     public Float requestFloat(boolean mayBeNull) throws InterruptedIOException {
         while (true) {
             try {
-                return Float.parseFloat(requestString(mayBeNull));
+                String string = requestString(mayBeNull);
+                if (string == null) {
+                    return null;
+                } else {
+                    return Float.parseFloat(string);
+                }
             } catch (NumberFormatException e) {
                 System.err.println("Ошибка парсинга Float.");
-            } catch (NullPointerException e) {
-                return null;
             }
         }
     }
@@ -65,11 +71,14 @@ public class InputHandler {
     public Integer requestInteger(boolean mayBeNull) throws InterruptedIOException {
         while (true) {
             try {
-                return Integer.parseInt(requestString(mayBeNull));
+                String string = requestString(mayBeNull);
+                if (string == null) {
+                    return null;
+                } else {
+                    return Integer.parseInt(string);
+                }
             } catch (NumberFormatException e) {
                 System.err.println("Ошибка парсинга Integer.");
-            } catch (NullPointerException e) {
-                return null;
             }
         }
     }
