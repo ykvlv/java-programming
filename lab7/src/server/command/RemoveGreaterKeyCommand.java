@@ -14,18 +14,18 @@ public class RemoveGreaterKeyCommand implements Command {
     @Override
     public Response execute(String[] params) {
         if (params.length != 1) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "usage: remove_greater_key value");
+            return new Response(ResponseType.ERROR, "usage: remove_greater_key value");
         }
         int key;
         try {
             key = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Ключ должен быть числом");
+            return new Response(ResponseType.ERROR, "Ключ должен быть числом");
         }
         flatHashMap.getFlats().entrySet().stream()
                 .filter(entry -> entry.getKey() > key)
                 .forEach(entry -> flatHashMap.remove(entry.getKey()));
-        return new Response(ResponseType.OK_YA_SDELAL, "Удаление прошло успешно");
+        return new Response(ResponseType.DONE, "Удаление прошло успешно");
     }
 
     @Override

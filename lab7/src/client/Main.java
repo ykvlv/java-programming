@@ -4,9 +4,6 @@ import java.net.*;
 import java.util.Scanner;
 
 public class Main {
-    // ой вот эта параша убрать
-    public static Client client;
-
     public static void main(String[] args) throws UnknownHostException, SocketException {
         int port = 1305;
         try {
@@ -21,6 +18,7 @@ public class Main {
         SocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), port);
         DatagramSocket socket = new DatagramSocket();
 
+        Client client = null;
         Scanner scanner = new Scanner(System.in);
         InputHandler inputHandler = new InputHandler(scanner, false);
         FlatCreator flatCreator = new FlatCreator(inputHandler);

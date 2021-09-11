@@ -24,23 +24,25 @@ public class ResponseHandler {
 
     public void process(Response response) {
         switch (response.getResponseType()) {
-            case OK_YA_SDELAL:
+            case DONE:
                 System.out.println((String) response.getObject());
                 break;
-            case WARNING_OSHIBKA_WHAAAAT:
+            case ERROR:
                 System.err.println((String) response.getObject());
                 break;
-            case MNE_NUZHNA_ELEMENTA:
+            case REQUEST_ITEM:
                 try {
                     Flat flat = flatCreator.createStandardFlat();
                     sendElement(flat, (Integer) response.getObject());
                 } catch (InterruptedIOException e) {
-                    System.out.println("Создание элемента коллекции прервано.");
+                    System.err.println("Создание элемента коллекции прервано.");
                 } catch (IOException e) {
                     System.err.println("Ошибка отправки элемента коллекции.");
+                } catch (ClassNotFoundException e) {
+                    System.err.println("Ошибка распаковки ответа.");
                 }
                 break;
-            case SCRIPT_EBASH:
+            case SCRIPT:
                 try {
                     executeScript((String) response.getObject());
                 } catch (FileNotFoundException e) {
@@ -50,9 +52,10 @@ public class ResponseHandler {
         }
     }
 
-    public void sendElement(Flat flat, Integer key) throws IOException {
-        Request request = new Request(RequestType.DOBAV_ELEMENT_PROSHU, new FlatAndKey(flat, key));
+    public void sendElement(Flat flat, Integer key) throws IOException, ClassNotFoundException {
+        Request request = new Request(RequestType.SEND_ITEM, new FlatAndKey(flat, key));
         deliveryHandler.sendRequest(request);
+        process(deliveryHandler.receiveResponse());
     }
 
     public void executeScript(String fileName) throws FileNotFoundException {

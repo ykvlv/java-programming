@@ -14,7 +14,7 @@ public class ClearCommand implements Command {
     @Override
     public Response execute(String[] params) {
         flatHashMap.clear();
-        return new Response(ResponseType.OK_YA_SDELAL, "Коллекция очищена");
+        return new Response(ResponseType.DONE, "Коллекция очищена");
     }
 
     @Override

@@ -9,8 +9,6 @@ import common.forFlat.Flat;
 import common.forFlat.FlatAndKey;
 
 import java.io.*;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CommandExecutor {
     private final CommandRegister commandRegister;
@@ -23,19 +21,19 @@ public class CommandExecutor {
 
     public Response execute(Request request) {
         switch (request.getRequestType()) {
-            case VIPOLNIT_COMMANDA_PLZ:
+            case COMMAND:
                 return execute((String) request.getObject());
-            case DOBAV_ELEMENT_PROSHU:
+            case SEND_ITEM:
                 FlatAndKey flatAndKey = (FlatAndKey) request.getObject();
                 return add(flatAndKey.getKey(), flatAndKey.getFlat());
             default:
-                return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Ало клиент а что тебе надо?");
+                return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
         }
     }
 
     private Response add(Integer key, Flat flat) {
         flatHashMap.put(key, flat);
-        return new Response(ResponseType.OK_YA_SDELAL, "Элемент добавлен");
+        return new Response(ResponseType.DONE, "Элемент добавлен");
     }
 
     private Response execute(String args) {

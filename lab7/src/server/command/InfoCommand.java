@@ -15,7 +15,7 @@ public class InfoCommand implements Command {
 
     @Override
     public Response execute(String[] params) {
-        return new Response(ResponseType.OK_YA_SDELAL,
+        return new Response(ResponseType.DONE,
                 "Информация о коллекции:\n" +
                 "\tВремя инициализации: " + flatHashMap.getInitTime()
                         .format(DateTimeFormatter.ofPattern("dd.MM.uuuu HH:mm:ss")) + "\n" +

@@ -44,7 +44,7 @@ public class CommandRegister {
             //Хочу чтобы если комманда не выполнялась она выкидывала ошибку, а я ее тут отлавливал.
             return commands.get(command).execute(params);
         } else {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Команды нет в списке, " + possibleCommand(command));
+            return new Response(ResponseType.ERROR, "Команды нет в списке, " + possibleCommand(command));
         }
     }
 

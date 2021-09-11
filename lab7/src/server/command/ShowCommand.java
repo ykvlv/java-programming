@@ -18,7 +18,7 @@ public class ShowCommand implements Command {
         Optional<String> string = flatHashMap.getFlats().entrySet().stream()
                 .map(x -> x.getKey() + ":\n" + x.getValue().toString())
                 .reduce((x, y) -> x + "\n" + y);
-        return new Response(ResponseType.OK_YA_SDELAL, string.orElse("Коллекция пустая."));
+        return new Response(ResponseType.DONE, string.orElse("Коллекция пустая."));
     }
 
     @Override

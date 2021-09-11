@@ -14,19 +14,19 @@ public class RemoveKeyCommand implements Command {
     @Override
     public Response execute(String[] params) {
         if (params.length != 1) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "usage: remove_key key");
+            return new Response(ResponseType.ERROR, "usage: remove_key key");
         }
         int key;
         try {
             key = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Ключ должен быть числом.");
+            return new Response(ResponseType.ERROR, "Ключ должен быть числом.");
         }
         if (flatHashMap.containsKey(key)) {
             flatHashMap.remove(key);
-            return new Response(ResponseType.OK_YA_SDELAL, "Элемент с ключом " + key + " удален");
+            return new Response(ResponseType.DONE, "Элемент с ключом " + key + " удален");
         } else {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Элемента с таким ключом нету.");
+            return new Response(ResponseType.ERROR, "Элемента с таким ключом нету.");
         }
     }
 

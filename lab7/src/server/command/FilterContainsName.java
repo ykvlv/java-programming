@@ -16,7 +16,7 @@ public class FilterContainsName implements Command {
     @Override
     public Response execute(String[] params) {
         if (params.length != 1) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "usage: filter_contains_name name");
+            return new Response(ResponseType.ERROR, "usage: filter_contains_name name");
         }
         Optional<String> string = flatHashMap.getFlats().entrySet().stream()
                 .filter(x -> x.getValue()
@@ -24,7 +24,7 @@ public class FilterContainsName implements Command {
                         .contains(params[0]))
                 .map(x -> x.getKey() + ":\n" + x.getValue().toString())
                 .reduce((x, y) -> x + "\n" + y);
-        return new Response(ResponseType.OK_YA_SDELAL, string.orElse("Элементов по данному фильтру не найдено"));
+        return new Response(ResponseType.DONE, string.orElse("Элементов по данному фильтру не найдено"));
     }
 
     @Override

@@ -22,7 +22,7 @@ public class Client {
             System.out.print(inputHandler.isScriptMode() ? "" : "% ");
             try {
                 String command = inputHandler.nextLine();
-                Request request = new Request(RequestType.VIPOLNIT_COMMANDA_PLZ, command);
+                Request request = new Request(RequestType.COMMAND, command);
                 deliveryHandler.sendRequest(request);
                 Response response = deliveryHandler.receiveResponse();
                 responseHandler.process(response);

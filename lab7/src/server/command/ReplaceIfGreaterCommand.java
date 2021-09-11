@@ -15,7 +15,7 @@ public class ReplaceIfGreaterCommand implements Command {
     @Override
     public Response execute(String[] params) {
         if (params.length != 2) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "usage: replace_if_greater key value");
+            return new Response(ResponseType.ERROR, "usage: replace_if_greater key value");
         }
         int key;
         int value;
@@ -23,16 +23,16 @@ public class ReplaceIfGreaterCommand implements Command {
             key = Integer.parseInt(params[0]);
             value = Integer.parseInt(params[1]);
         } catch (NumberFormatException e) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Ключ и значение должны быть числом.");
+            return new Response(ResponseType.ERROR, "Ключ и значение должны быть числом.");
         }
         Flat flat = flatHashMap.get(key);
         if (flat == null) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Несуществует элемента с таким key");
+            return new Response(ResponseType.ERROR, "Несуществует элемента с таким key");
         }
         if (value > flat.getArea()) {
-            return new Response(ResponseType.MNE_NUZHNA_ELEMENTA, key);
+            return new Response(ResponseType.REQUEST_ITEM, key);
         } else {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Настоящее значение " + flat.getArea() + " больше введённого. Замена не требуется");
+            return new Response(ResponseType.ERROR, "Настоящее значение " + flat.getArea() + " больше введённого. Замена не требуется");
         }
     }
 

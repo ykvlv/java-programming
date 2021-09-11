@@ -15,18 +15,18 @@ public class InsertCommand implements Command {
     public Response execute(String[] params) {
         int key;
         if (params.length != 1) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "usage: insert key");
+            return new Response(ResponseType.ERROR, "usage: insert key");
         } else {
             try {
                 key = Integer.parseInt(params[0]);
             } catch (NumberFormatException e) {
-                return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Key должен быть числом");
+                return new Response(ResponseType.ERROR, "Key должен быть числом");
             }
         }
         if (flatHashMap.containsKey(key)) {
-            return new Response(ResponseType.WARNING_OSHIBKA_WHAAAAT, "Элемент с данным ключом уже есть в коллекции. Воспользуйтесь \"update\"");
+            return new Response(ResponseType.ERROR, "Элемент с данным ключом уже есть в коллекции. Воспользуйтесь \"update\"");
         }
-        return new Response(ResponseType.MNE_NUZHNA_ELEMENTA, key);
+        return new Response(ResponseType.REQUEST_ITEM, key);
     }
 
     @Override

@@ -7,7 +7,7 @@ public class ExecuteScriptCommand implements Command {
 
     @Override
     public Response execute(String[] params) {
-        return new Response(ResponseType.SCRIPT_EBASH, "Выполнение скрипта...");
+        return new Response(ResponseType.SCRIPT, "Выполнение скрипта...");
     }
 
     @Override
