@@ -7,6 +7,7 @@ import common.Response;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
+import java.util.NoSuchElementException;
 
 public class Client {
     private final DeliveryHandler deliveryHandler;
@@ -26,6 +27,8 @@ public class Client {
                 deliveryHandler.sendRequest(request);
                 Response response = deliveryHandler.receiveResponse();
                 responseHandler.process(response);
+            } catch (NoSuchElementException e) {
+                inputHandler.switchScript();
             } catch (SocketTimeoutException e) {
                 System.out.println("Превышено время ожидания от сервера");
             } catch (InterruptedIOException e) {

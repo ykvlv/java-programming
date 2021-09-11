@@ -29,7 +29,7 @@ public class RemoveLowerKeyCommand implements Command {
         }
         //Множество ключей которые надо будет удалить
         Set<Integer> collect = flatHashMap.getFlats().keySet().stream()
-                .filter(flat -> flat < key)
+                .filter(curr_key -> curr_key < key)
                 .collect(Collectors.toSet());
         for (Integer illiquidKey : collect) {
             flatHashMap.remove(illiquidKey);
@@ -39,7 +39,7 @@ public class RemoveLowerKeyCommand implements Command {
 
     @Override
     public String shortInfo() {
-        return "Удалить из коллекции все элементы, ключ которых меньше, заданного";
+        return "Удалить из коллекции все элементы, ключ которых меньше заданного";
     }
 
     @Override

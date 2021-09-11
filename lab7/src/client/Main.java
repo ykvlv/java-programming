@@ -18,14 +18,13 @@ public class Main {
         SocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), port);
         DatagramSocket socket = new DatagramSocket();
 
-        Client client = null;
         Scanner scanner = new Scanner(System.in);
-        InputHandler inputHandler = new InputHandler(scanner, false);
+        InputHandler inputHandler = new InputHandler(scanner);
         FlatCreator flatCreator = new FlatCreator(inputHandler);
         DeliveryHandler deliveryHandler = new DeliveryHandler(address, socket);
-        ResponseHandler responseHandler = new ResponseHandler(flatCreator, deliveryHandler, client);
+        ResponseHandler responseHandler = new ResponseHandler(flatCreator, deliveryHandler, inputHandler);
 
-        client = new Client(deliveryHandler, responseHandler);
+        Client client = new Client(deliveryHandler, responseHandler);
 
         try {
             client.run(inputHandler);

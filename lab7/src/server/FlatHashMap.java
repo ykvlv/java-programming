@@ -47,10 +47,8 @@ public class FlatHashMap {
     }
 
     public void remove(int key) {
-        System.out.println(ids);
         ids.remove(flats.get(key).getId());
         flats.remove(key);
-        System.out.println(ids);
     }
 
     public boolean containsKey(int key) {

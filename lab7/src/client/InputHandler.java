@@ -1,29 +1,29 @@
 package client;
 
 import java.io.InterruptedIOException;
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 
 public class InputHandler {
     public static final String InterruptCommand = "exit";
 
-    private final Scanner scanner;
-    private final boolean scriptMode;
+    private final LinkedList<Scanner> scanners = new LinkedList<>();
+    private final LinkedList<String> scannersNames = new LinkedList<>();
+    private Scanner scanner;
 
-    public InputHandler(Scanner scanner, boolean scriptMode) {
-        this.scriptMode = scriptMode;
+    public InputHandler(Scanner scanner) {
         this.scanner = scanner;
     }
 
-    public String nextLine() throws InterruptedIOException {
+    public String nextLine() throws InterruptedIOException, NoSuchElementException {
         String string = scanner.nextLine().trim();
         if (string.equals(InterruptCommand)) {
             throw new InterruptedIOException();
+        } else {
+            return string;
         }
-        return string;
     }
 
-    public String requestString(boolean mayBeNull) throws InterruptedIOException {
+    public String requestString(boolean mayBeNull) throws InterruptedIOException, NoSuchElementException {
         while (true) {
             String string = nextLine();
             if (string.equals("")) {
@@ -99,6 +99,21 @@ public class InputHandler {
     }
 
     public boolean isScriptMode() {
-        return scriptMode;
+        return !scanners.isEmpty();
+    }
+
+    public void scriptFrom(Scanner scanner, String fileName) {
+        scanners.add(this.scanner);
+        scannersNames.add(fileName);
+        this.scanner = scanner;
+    }
+
+    public void switchScript() {
+        scanner = scanners.removeLast();
+        scannersNames.remove();
+    }
+
+    public LinkedList<String> getScannersNames() {
+        return scannersNames;
     }
 }

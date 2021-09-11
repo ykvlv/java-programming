@@ -23,11 +23,11 @@ public class RemoveGreaterKeyCommand implements Command {
         try {
             key = Integer.parseInt(params[0]);
         } catch (NumberFormatException e) {
-            return new Response(ResponseType.ERROR, "Ключ должен быть числом");
+            return new Response(ResponseType.ERROR, "Ключ должен быть числом.");
         }
         //Множество ключей которые надо будет удалить
         Set<Integer> collect = flatHashMap.getFlats().keySet().stream()
-                .filter(flat -> flat > key)
+                .filter(curr_key -> curr_key > key)
                 .collect(Collectors.toSet());
         for (Integer illiquidKey : collect) {
             flatHashMap.remove(illiquidKey);
@@ -37,7 +37,7 @@ public class RemoveGreaterKeyCommand implements Command {
 
     @Override
     public String shortInfo() {
-        return "Удалить из коллекции все элементы, ключ которых превышает заданный";
+        return "Удалить из коллекции все элементы, ключ которых больше заданного";
     }
 
     @Override

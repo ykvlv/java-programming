@@ -14,10 +14,10 @@ public class ResponseHandler {
     private final FlatCreator flatCreator;
     private final HashSet<String> nowExecuting = new HashSet<>();
     private final DeliveryHandler deliveryHandler;
-    private final Client client;
+    private final InputHandler inputHandler;
 
-    public ResponseHandler(FlatCreator flatCreator, DeliveryHandler deliveryHandler, Client client) {
-        this.client = client;
+    public ResponseHandler(FlatCreator flatCreator, DeliveryHandler deliveryHandler, InputHandler inputHandler) {
+        this.inputHandler = inputHandler;
         this.deliveryHandler = deliveryHandler;
         this.flatCreator = flatCreator;
     }
@@ -60,12 +60,10 @@ public class ResponseHandler {
 
     public void executeScript(String fileName) throws FileNotFoundException {
         Scanner scriptScanner = new Scanner(new InputStreamReader(new FileInputStream(fileName)));
-        if (nowExecuting.contains(fileName)) {
+        if (inputHandler.getScannersNames().contains(fileName)) {
             System.err.printf("Во избежание рекурсии %s запущен не будет%n", fileName);
             return;
         }
-        nowExecuting.add(fileName);
-        client.run(new InputHandler(scriptScanner, true));
-        nowExecuting.remove(fileName);
+        inputHandler.scriptFrom(scriptScanner, fileName);
     }
 }

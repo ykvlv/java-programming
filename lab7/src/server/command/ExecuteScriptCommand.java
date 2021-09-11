@@ -3,11 +3,17 @@ package server.command;
 import common.Response;
 import common.ResponseType;
 
+import java.io.FileNotFoundException;
+
 public class ExecuteScriptCommand implements Command {
 
     @Override
     public Response execute(String[] params) {
-        return new Response(ResponseType.SCRIPT, "Выполнение скрипта...");
+        try {
+            return new Response(ResponseType.SCRIPT, params[0]);
+        } catch (ArrayIndexOutOfBoundsException e) {
+            return new Response(ResponseType.ERROR, "Введите название скрипта");
+        }
     }
 
     @Override
