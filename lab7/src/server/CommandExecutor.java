@@ -37,7 +37,6 @@ public class CommandExecutor {
     }
 
     private Response execute(String args) {
-        //Да хочу чтобы тут не было возвращения запросов. Типа тут будет стринг – значит все ок. иначе там ошибка вылетит.
         return commandRegister.decryptAndRun(args);
     }
 

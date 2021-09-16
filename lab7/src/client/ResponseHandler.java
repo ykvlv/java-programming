@@ -12,7 +12,6 @@ import java.util.Scanner;
 
 public class ResponseHandler {
     private final FlatCreator flatCreator;
-    private final HashSet<String> nowExecuting = new HashSet<>();
     private final DeliveryHandler deliveryHandler;
     private final InputHandler inputHandler;
 

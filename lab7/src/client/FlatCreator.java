@@ -7,7 +7,6 @@ import java.time.LocalDateTime;
 import java.util.*;
 
 public class FlatCreator {
-    // что придумать с userInvitation?
     private final InputHandler inputHandler;
 
     public FlatCreator(InputHandler inputHandler) {
@@ -35,7 +34,6 @@ public class FlatCreator {
     }
 
     private int generateId() {
-        //норм генерация через хеш с проверкой
         return new Random().nextInt(Integer.MAX_VALUE);
     }
 

@@ -41,7 +41,6 @@ public class CommandRegister {
         String[] params = Arrays.copyOfRange(commandAndParams, 1, commandAndParams.length);
 
         if (commands.containsKey(command)) {
-            //Хочу чтобы если комманда не выполнялась она выкидывала ошибку, а я ее тут отлавливал.
             return commands.get(command).execute(params);
         } else {
             return new Response(ResponseType.ERROR, "Команды нет в списке, " + possibleCommand(command));
