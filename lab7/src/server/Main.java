@@ -11,6 +11,9 @@ import java.nio.channels.ClosedChannelException;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 
 public class Main {
@@ -29,6 +32,17 @@ public class Main {
         } catch (IOException e) {
             System.out.println("Ошибка чтения файла.");
             return;
+        }
+
+        String url = "jdbc:postgresql://localhost:54321/studs";
+        String name = "s311727";
+        String pass = "------";
+
+        try {
+            Connection connection = DriverManager.getConnection(url, name, pass);
+            System.out.println(connection.getTransactionIsolation());
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         //Инициализация порта
