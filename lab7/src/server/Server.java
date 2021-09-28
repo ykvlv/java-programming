@@ -3,6 +3,7 @@ package server;
 import common.Request;
 import common.RequestType;
 import common.Response;
+import common.StringDye;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -40,7 +41,7 @@ public class Server {
                             reader.close();
                             return;
                         default:
-                            System.out.println("Есть только save и exit");
+                            System.out.println(StringDye.yellow("Есть только save и exit"));
                     }
                 }
                 continue;
@@ -65,7 +66,7 @@ public class Server {
                         key.interestOps(SelectionKey.OP_READ);
                     }
                 } else {
-                    System.out.println("key is not valid. (oT-T)尸");
+                    System.out.println(StringDye.yellow("key is not valid. (oT-T)尸"));
                 }
                 it.remove();
             }

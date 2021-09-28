@@ -19,9 +19,9 @@ public class ServerIOHandler {
             ByteArrayInputStream byteArrayIS = new ByteArrayInputStream(byteBuffer.array());
             ObjectInputStream objectIS = new ObjectInputStream(byteArrayIS);
             Request request = (Request) objectIS.readObject();
+            request.setAddress(address);
             objectIS.close();
             byteArrayIS.close();
-            request.setAddress(address);
             return request;
         }
         return null;

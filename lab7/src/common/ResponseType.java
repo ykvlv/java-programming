@@ -6,5 +6,6 @@ public enum ResponseType implements Serializable {
     DONE,
     REQUEST_ITEM,
     ERROR,
-    SCRIPT;
+    SCRIPT,
+    CONNECT
 }

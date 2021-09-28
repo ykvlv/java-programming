@@ -3,7 +3,9 @@ package client;
 import common.Request;
 import common.RequestType;
 import common.Response;
+import common.StringDye;
 
+import java.io.Console;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.SocketTimeoutException;
@@ -18,6 +20,12 @@ public class Client {
         this.responseHandler = responseHandler;
     }
 
+    public boolean connect(Console console) {
+        String username = console.readLine("Введите имя пользователя: ");
+        String password = new String(console.readPassword("Введите пароль: "));
+        return true;
+    }
+
     public void run(InputHandler inputHandler) {
         while (true) {
             System.out.print(inputHandler.isScriptMode() ? "" : "% ");
@@ -30,13 +38,13 @@ public class Client {
             } catch (NoSuchElementException e) {
                 inputHandler.switchScript();
             } catch (SocketTimeoutException e) {
-                System.out.println("Превышено время ожидания от сервера");
+                System.out.println(StringDye.yellow("Превышено время ожидания от сервера"));
             } catch (InterruptedIOException e) {
                 return;
             } catch (IOException e) {
-                System.err.println("Ошибка приема/передачи.");
+                System.out.println(StringDye.yellow("Ошибка приема/передачи."));
             } catch (ClassNotFoundException e) {
-                System.err.println("Ошибка распаковки ответа.");
+                System.out.println(StringDye.yellow("Ошибка распаковки ответа."));
             }
         }
     }

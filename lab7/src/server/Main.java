@@ -79,14 +79,16 @@ public class Main {
 
             Selector selector = Selector.open();
             channel.register(selector, SelectionKey.OP_READ);
+            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
             ServerIOHandler serverIOHandler = new ServerIOHandler();
-            CommandRegister commandRegister = new CommandRegister(flatHashMap, serverIOHandler);
+            CommandRegister commandRegister = new CommandRegister(flatHashMap);
             CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap);
 
-            Server server = new Server(selector, serverIOHandler, commandExecutor, new BufferedReader(new InputStreamReader(System.in)));
+            Server server = new Server(selector, serverIOHandler, commandExecutor, reader);
             System.out.println("Запуск сервера.");
             server.run();
+
         } catch (SocketException e) {
             System.out.println(StringDye.red("Не удалось подключиться к каналу."));
         } catch (ClosedChannelException e) {

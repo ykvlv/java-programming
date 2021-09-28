@@ -1,5 +1,8 @@
 package client;
 
+import common.StringDye;
+
+import java.io.Console;
 import java.net.*;
 import java.util.Scanner;
 
@@ -8,16 +11,18 @@ public class Main {
         int port = 1305;
         try {
             port = Integer.parseInt(args[0]);
-            System.out.printf("Подключение по порту %s.%n", port);
+            System.out.printf(StringDye.green("Подключение по порту %s.%n"), port);
         } catch (NumberFormatException e) {
-            System.err.printf("Ошибка парсинга порта. Подключение по стандартному: %s.%n", port);
+            System.err.println(StringDye.red("Ошибка парсинга порта."));
+            return;
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.err.printf("Порт не задан. Подключение по стандартному: %s.%n", port);
+            System.err.printf(StringDye.yellow("Порт не задан. Подключение по стандартному: %s.%n"), port);
         }
 
         SocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), port);
         DatagramSocket socket = new DatagramSocket();
 
+        Console console = System.console();
         Scanner scanner = new Scanner(System.in);
         InputHandler inputHandler = new InputHandler(scanner);
         FlatCreator flatCreator = new FlatCreator(inputHandler);
@@ -27,10 +32,13 @@ public class Main {
         Client client = new Client(deliveryHandler, responseHandler);
 
         try {
-            client.run(inputHandler);
+            if (client.connect(console)) {
+                client.run(inputHandler);
+            } else {
+                System.out.println();
+            }
         } catch (Exception e) {
-            System.out.println("Вы положили клиент. (oT-T)尸");
-            e.printStackTrace();
+            System.out.println(StringDye.red("Вы положили клиент. (oT-T)尸"));
         }
     }
 }

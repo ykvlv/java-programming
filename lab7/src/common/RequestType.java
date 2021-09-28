@@ -4,5 +4,6 @@ import java.io.Serializable;
 
 public enum RequestType implements Serializable {
     COMMAND,
-    SEND_ITEM;
+    SEND_ITEM,
+    CONNECT
 }

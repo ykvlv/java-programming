@@ -2,6 +2,7 @@ package server;
 
 import common.Response;
 import common.ResponseType;
+import common.StringDye;
 import server.command.*;
 
 import java.util.Arrays;
@@ -10,7 +11,7 @@ import java.util.HashMap;
 public class CommandRegister {
     private final HashMap<String, Command> commands = new HashMap<>();
 
-    public CommandRegister(FlatHashMap flatHashMap, ServerIOHandler serverIOHandler) {
+    public CommandRegister(FlatHashMap flatHashMap) {
         addCommand(new UpdateCommand(flatHashMap));
         addCommand(new ReplaceIfGreaterCommand(flatHashMap));
         addCommand(new HelpCommand(this));
@@ -29,7 +30,7 @@ public class CommandRegister {
 
     private void addCommand(Command command) {
         if (commands.containsKey(command.name())) {
-            System.out.println("Имеются команды с одинаковым названием");
+            System.out.println(StringDye.yellow("Имеются команды с одинаковым названием"));
         } else {
             commands.put(command.name(), command);
         }

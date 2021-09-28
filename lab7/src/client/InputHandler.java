@@ -1,5 +1,7 @@
 package client;
 
+import common.StringDye;
+
 import java.io.InterruptedIOException;
 import java.util.*;
 
@@ -30,7 +32,7 @@ public class InputHandler {
                 if (mayBeNull) {
                     return null;
                 } else {
-                    System.err.println("Не может быть null.");
+                    System.out.println(StringDye.yellow("Не может быть null."));
                 }
             } else {
                 return string;
@@ -48,7 +50,7 @@ public class InputHandler {
                     return Long.parseLong(string);
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Ошибка парсинга Integer.");
+                System.out.println(StringDye.yellow("Ошибка парсинга Integer."));
             }
         }
     }
@@ -63,7 +65,7 @@ public class InputHandler {
                     return Float.parseFloat(string);
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Ошибка парсинга Float.");
+                System.out.println(StringDye.yellow("Ошибка парсинга Float."));
             }
         }
     }
@@ -78,7 +80,7 @@ public class InputHandler {
                     return Integer.parseInt(string);
                 }
             } catch (NumberFormatException e) {
-                System.err.println("Ошибка парсинга Integer.");
+                System.out.println(StringDye.yellow("Ошибка парсинга Integer."));
             }
         }
     }
@@ -90,7 +92,7 @@ public class InputHandler {
                 if (Arrays.stream(values).anyMatch(value -> value.toString().equals(string))) {
                     return string;
                 } else {
-                    System.err.println("Значение не найдено");
+                    System.out.println(StringDye.yellow("Значение не найдено"));
                 }
             } catch (NullPointerException e) {
                 return null;

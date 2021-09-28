@@ -5,8 +5,8 @@ import com.google.gson.GsonBuilder;
 import common.Request;
 import common.Response;
 import common.ResponseType;
+import common.StringDye;
 import common.forFlat.Flat;
-import common.forFlat.FlatAndKey;
 
 import java.io.*;
 
@@ -24,14 +24,15 @@ public class CommandExecutor {
             case COMMAND:
                 return execute((String) request.getObject());
             case SEND_ITEM:
-                FlatAndKey flatAndKey = (FlatAndKey) request.getObject();
-                return add(flatAndKey.getKey(), flatAndKey.getFlat());
+                Flat flat = (Flat) request.getObject();
+                Integer key = (Integer) request.getExtra();
+                return add(flat, key);
             default:
                 return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
         }
     }
 
-    private Response add(Integer key, Flat flat) {
+    private Response add(Flat flat, Integer key) {
         flatHashMap.put(key, flat);
         return new Response(ResponseType.DONE, "Элемент добавлен");
     }
@@ -49,11 +50,11 @@ public class CommandExecutor {
             OutputStreamWriter osw = new OutputStreamWriter(fos);
             osw.write(json);
             osw.close();
-            System.out.println("Коллекция " + flatHashMap.getFileName() + " сохранена.");
+            System.out.println(StringDye.green("Коллекция " + flatHashMap.getFileName() + " сохранена."));
         } catch (FileNotFoundException e) {
-            System.out.println("Доступ к " + flatHashMap.getFileName() + " ограничен.");
+            System.out.println(StringDye.yellow("Доступ к " + flatHashMap.getFileName() + " ограничен."));
         } catch (IOException e) {
-            System.out.println("Записать " + flatHashMap.getFileName() + " невозможно.");
+            System.out.println(StringDye.yellow("Записать " + flatHashMap.getFileName() + " невозможно."));
         }
     }
 }
