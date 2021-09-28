@@ -1,9 +1,8 @@
 package server;
 
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import common.StringDye;
+
+import java.io.*;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
@@ -24,36 +23,51 @@ public class Main {
             String fileName = args[0];
             flatHashMap = new FlatHashMap(LocalDateTime.now(), fileName);
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println("Первым аргументом введите название коллекции.");
+            System.out.println(StringDye.red("Первым аргументом введите название коллекции."));
             return;
         } catch (FileNotFoundException e) {
-            System.out.println("Файл не найден.");
+            System.out.println(StringDye.red("Файл не найден."));
             return;
         } catch (IOException e) {
-            System.out.println("Ошибка чтения файла.");
+            System.out.println(StringDye.red("Ошибка чтения файла."));
             return;
         }
 
-        String url = "jdbc:postgresql://localhost:54321/studs";
-        String name = "s311727";
-        String pass = "------";
-
+        // Инициализация БД
+        String localUrl = "jdbc:postgresql://localhost:5432/studs";
+        String heliosUrl = "jdbc:postgresql://pg:5432/studs";
+        String name, pass;
+        Connection connection;
         try {
-            Connection connection = DriverManager.getConnection(url, name, pass);
-            System.out.println(connection.getTransactionIsolation());
+            Console console = System.console();
+            name = console.readLine("Введите имя пользователя БД: ");
+            pass = new String(console.readPassword("Введите пароль: "));
+            try {
+                connection = DriverManager.getConnection(heliosUrl, name, pass);
+                System.out.printf(StringDye.green("Подключение к %s успешно.%n"), heliosUrl);
+            } catch (SQLException e) {
+                System.out.printf(StringDye.yellow("Ошибка %s подключения к %s.%n"), e.getSQLState() , heliosUrl);
+                connection = DriverManager.getConnection(localUrl, name, pass);
+                System.out.printf(StringDye.green("Подключение к %s успешно.%n"), localUrl);
+            }
+        } catch (NullPointerException e) {
+            System.out.println(StringDye.red("Не удалось достучаться до консоли."));
+            return;
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.out.printf(StringDye.red("Ошибка %s подключения к %s.%n"), e.getSQLState(), localUrl);
+            return;
         }
 
         //Инициализация порта
         int port = 1305;
         try {
             port = Integer.parseInt(args[1]);
-            System.out.printf("Подключение по порту %s.%n", port);
+            System.out.printf(StringDye.green("Подключение по порту %s.%n"), port);
         } catch (NumberFormatException e) {
-            System.err.printf("Ошибка парсинга порта. Подключение по стандартному: %s.%n", port);
+            System.out.println(StringDye.red("Ошибка парсинга порта."));
+            return;
         } catch (ArrayIndexOutOfBoundsException e) {
-            System.err.printf("Порт не задан. Подключение по стандартному: %s.%n", port);
+            System.err.printf(StringDye.yellow("Порт не задан. Подключение по стандартному: %s.%n"), port);
         }
 
         //Запуск сервера
@@ -68,21 +82,19 @@ public class Main {
 
             ServerIOHandler serverIOHandler = new ServerIOHandler();
             CommandRegister commandRegister = new CommandRegister(flatHashMap, serverIOHandler);
-
             CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap);
 
             Server server = new Server(selector, serverIOHandler, commandExecutor, new BufferedReader(new InputStreamReader(System.in)));
             System.out.println("Запуск сервера.");
             server.run();
-
         } catch (SocketException e) {
-            System.out.println("Не удалось подключиться к каналу.");
+            System.out.println(StringDye.red("Не удалось подключиться к каналу."));
         } catch (ClosedChannelException e) {
-            System.out.println("Канал закрыт для подключения.");
+            System.out.println(StringDye.red("Канал закрыт для подключения."));
         } catch (IOException e) {
-            System.out.println("Произошла ошибка ввода/вывода...");
+            System.out.println(StringDye.red("Произошла ошибка ввода/вывода..."));
         } catch (ClassNotFoundException e) {
-            System.out.println("Не удалось распаковать класс.");
+            System.out.println(StringDye.red("Не удалось распаковать класс."));
         }
     }
 }
