@@ -3,6 +3,8 @@ package client;
 import common.StringDye;
 
 import java.io.Console;
+import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.*;
 import java.util.Scanner;
 
@@ -35,8 +37,12 @@ public class Main {
             if (client.connect(console)) {
                 client.run(inputHandler);
             } else {
-                System.out.println();
+                System.out.println(StringDye.red("Авторизация прервана"));
             }
+        } catch (ClassNotFoundException e) {
+            System.out.println(StringDye.red("Ошибка распаковки ответа."));
+        } catch (IOException e) {
+            System.out.println(StringDye.red("Ошибка подключения к серверу"));
         } catch (Exception e) {
             System.out.println(StringDye.red("Вы положили клиент. (oT-T)尸"));
         }

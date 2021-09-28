@@ -9,14 +9,17 @@ import common.StringDye;
 import common.forFlat.Flat;
 
 import java.io.*;
+import java.sql.Connection;
 
 public class CommandExecutor {
     private final CommandRegister commandRegister;
     private final FlatHashMap flatHashMap;
+    private final Connection connection;
 
-    public CommandExecutor(CommandRegister commandRegister, FlatHashMap flatHashMap) {
+    public CommandExecutor(CommandRegister commandRegister, FlatHashMap flatHashMap, Connection connection) {
         this.flatHashMap = flatHashMap;
         this.commandRegister = commandRegister;
+        this.connection = connection;
     }
 
     public Response execute(Request request) {
@@ -27,6 +30,8 @@ public class CommandExecutor {
                 Flat flat = (Flat) request.getObject();
                 Integer key = (Integer) request.getExtra();
                 return add(flat, key);
+            case TOUCH:
+
             default:
                 return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
         }

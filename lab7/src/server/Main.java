@@ -83,7 +83,7 @@ public class Main {
 
             ServerIOHandler serverIOHandler = new ServerIOHandler();
             CommandRegister commandRegister = new CommandRegister(flatHashMap);
-            CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap);
+            CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap, connection);
 
             Server server = new Server(selector, serverIOHandler, commandExecutor, reader);
             System.out.println("Запуск сервера.");

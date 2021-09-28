@@ -1,9 +1,6 @@
 package client;
 
-import common.Request;
-import common.RequestType;
-import common.Response;
-import common.StringDye;
+import common.*;
 
 import java.io.Console;
 import java.io.IOException;
@@ -20,10 +17,48 @@ public class Client {
         this.responseHandler = responseHandler;
     }
 
-    public boolean connect(Console console) {
-        String username = console.readLine("Введите имя пользователя: ");
-        String password = new String(console.readPassword("Введите пароль: "));
-        return true;
+    public boolean connect(Console console) throws IOException, ClassNotFoundException {
+        String username = console.readLine("Введите имя пользователя: ").trim();
+        if (username.equals("")) {
+            return false;
+        }
+        // Существует ли пользователь?
+        deliveryHandler.sendRequest(new Request(RequestType.TOUCH, username));
+        Response response = deliveryHandler.receiveResponse();
+        String password = "";
+        String repeatPassword;
+        if (response.getResponseType().equals(ResponseType.CONNECT)) {
+            if (response.getObject().equals(username)) {
+                // Пользователь существует
+                password = new String(console.readPassword("Введите пароль: "));
+            } else {
+                // Регистрация нового пользовтеля
+                System.out.printf("Регистрация нового пользователя %s%n", username);
+                do {
+                    password = new String(console.readPassword("Введите пароль: "));
+                    repeatPassword = new String(console.readPassword("Повторите пароль: "));
+                    if (!password.equals(repeatPassword)) {
+                        System.out.println(StringDye.yellow("Пароли отличаются!"));
+                    }
+                } while (!password.equals(repeatPassword));
+            }
+        }
+        if (password.equals("")) {
+            return false;
+        }
+
+        // Отправить запрос на авторизацию
+        deliveryHandler.sendRequest(new Request(RequestType.AUTH, username, password));
+        response = deliveryHandler.receiveResponse();
+        switch (response.getResponseType()) {
+            case DONE:
+                System.out.printf(StringDye.green("Добро пожаловать %s!%n"), username);
+                return true;
+            case ERROR:
+                System.out.println(StringDye.red("Неверный пароль. Повторие попытку позже."));
+            default:
+                return false;
+        }
     }
 
     public void run(InputHandler inputHandler) {
