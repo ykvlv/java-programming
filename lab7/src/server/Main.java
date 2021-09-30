@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         // Инициализация БД
         String heliosUrl = "jdbc:postgresql://pg:5432/studs";
-        String localUrl = "jdbc:postgresql://localhost:54321/studs";
+        String localUrl = "jdbc:postgresql://localhost:5435/studs";
         String name, pass;
         Connection connection;
         try {
@@ -38,7 +38,7 @@ public class Main {
             System.out.println(StringDye.red("Не удалось достучаться до консоли."));
             return;
         } catch (SQLException e) {
-            System.out.printf(StringDye.red("Ошибка %s подключения к базе данных.%n"), e.getSQLState());
+            System.out.printf(StringDye.red("Ошибка %s подключения к %s.%n"), e.getSQLState() , localUrl);
             return;
         }
 
@@ -87,6 +87,7 @@ public class Main {
         } catch (ClosedChannelException e) {
             System.out.println(StringDye.red("Канал закрыт для подключения."));
         } catch (IOException e) {
+            e.printStackTrace();
             System.out.println(StringDye.red("Произошла ошибка ввода/вывода..."));
         } catch (ClassNotFoundException e) {
             System.out.println(StringDye.red("Не удалось распаковать класс."));

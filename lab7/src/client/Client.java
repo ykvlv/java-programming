@@ -25,26 +25,31 @@ public class Client {
         // Существует ли пользователь?
         deliveryHandler.sendRequest(new Request(RequestType.TOUCH, username));
         Response response = deliveryHandler.receiveResponse();
-        String password = "";
+        String password;
         String repeatPassword;
-        if (response.getResponseType().equals(ResponseType.CONNECT)) {
-            if (response.getObject().equals(username)) {
-                // Пользователь существует
-                password = new String(console.readPassword("Введите пароль: "));
-            } else {
-                // Регистрация нового пользовтеля
-                System.out.printf("Регистрация нового пользователя %s%n", username);
-                do {
-                    password = new String(console.readPassword("Введите пароль: "));
-                    repeatPassword = new String(console.readPassword("Повторите пароль: "));
-                    if (!password.equals(repeatPassword)) {
-                        System.out.println(StringDye.yellow("Пароли отличаются!"));
-                    }
-                } while (!password.equals(repeatPassword));
+        if (response.getResponseType() != ResponseType.CONNECT) {
+            if (response.getResponseType() == ResponseType.ERROR) {
+                System.out.println((String) response.getObject());
             }
-        }
-        if (password.equals("")) {
             return false;
+        }
+
+        if (response.getObject() != null && response.getObject().equals(username)) {
+            // Пользователь существует
+            password = new String(console.readPassword("Введите пароль: "));
+        } else {
+            // Регистрация нового пользовтеля
+            System.out.println("Регистрация нового пользователя!\n");
+            do {
+                password = new String(console.readPassword("Введите пароль (Enter — отмена): ")).trim();
+                if (password.equals("")) { return false; }
+                repeatPassword = new String(console.readPassword("Повторите пароль: ")).trim();
+                if (repeatPassword.equals("")) { return false; }
+
+                if (!password.equals(repeatPassword)) {
+                    System.out.println(StringDye.yellow("Пароли отличаются!"));
+                }
+            } while (!password.equals(repeatPassword));
         }
 
         // Отправить запрос на авторизацию

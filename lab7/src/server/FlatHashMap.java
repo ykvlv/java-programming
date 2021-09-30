@@ -19,6 +19,8 @@ public class FlatHashMap {
         while (result.next()) {
             this.put(result.getInt("key"), createFlatFromResult(result));
         }
+        result.close();
+        statement.close();
     }
 
     private Flat createFlatFromResult(ResultSet result) throws SQLException {
@@ -32,9 +34,9 @@ public class FlatHashMap {
                 result.getTime("creationTime").toLocalTime());
         Float area = result.getFloat("area");
         Integer rooms = result.getInt("rooms");
-        Furnish furnish = Furnish.valueOf(result.getString("furnish"));
-        View view = View.valueOf(result.getString("view"));
-        Transport transport = Transport.valueOf(result.getString("transport"));
+        Furnish furnish = result.getString("furnish") == null ? null : Furnish.valueOf(result.getString("furnish"));
+        View view = result.getString("view") == null ? null : View.valueOf(result.getString("view"));
+        Transport transport = result.getString("transport") == null ? null : Transport.valueOf(result.getString("transport"));
         House house = new House(
                 result.getString("houseName"),
                 result.getLong("houseYear"),
