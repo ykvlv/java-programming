@@ -1,7 +1,5 @@
 package server;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import common.Request;
 import common.Response;
 import common.ResponseType;
@@ -47,19 +45,6 @@ public class CommandExecutor {
     }
 
     public void saveAll() {
-        Gson gson = new GsonBuilder().serializeNulls().setPrettyPrinting().create();
-        String json = gson.toJson(flatHashMap.getFlats());
-        try {
-            File file = new File(flatHashMap.getFileName());
-            FileOutputStream fos = new FileOutputStream(file);
-            OutputStreamWriter osw = new OutputStreamWriter(fos);
-            osw.write(json);
-            osw.close();
-            System.out.println(StringDye.green("Коллекция " + flatHashMap.getFileName() + " сохранена."));
-        } catch (FileNotFoundException e) {
-            System.out.println(StringDye.yellow("Доступ к " + flatHashMap.getFileName() + " ограничен."));
-        } catch (IOException e) {
-            System.out.println(StringDye.yellow("Записать " + flatHashMap.getFileName() + " невозможно."));
-        }
+
     }
 }

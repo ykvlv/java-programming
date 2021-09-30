@@ -1,37 +1,50 @@
 package server;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import common.forFlat.Flat;
+import common.forFlat.*;
 
-import java.io.*;
-import java.lang.reflect.Type;
+import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.*;
 
 public class FlatHashMap {
-    private final HashMap<Integer, Flat> flats;
-    private final String fileName;
-    private final HashSet<Integer> ids = new HashSet<>();
+    private final HashMap<Integer, Flat> flats = new HashMap<>();
+    private final HashMap<Integer, String> owners = new HashMap<>();
     private final LocalDateTime initTime;
 
-    public FlatHashMap(LocalDateTime initTime, String fileName) throws IOException {
+    public FlatHashMap(LocalDateTime initTime, Connection connection) throws SQLException {
         this.initTime = initTime;
-        this.fileName = fileName;
-        File file = new File(fileName.trim());
-        BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(file)));
-        String json = "";
-        while (br.ready()) {
-            json = json.concat(br.readLine().trim());
+        Statement statement = connection.createStatement();
+        ResultSet result =  statement.executeQuery("SELECT * FROM flats");
+
+        while (result.next()) {
+            this.put(result.getInt("key"), createFlatFromResult(result));
         }
-        Type itemsHashMapType = new TypeToken<HashMap<Integer, Flat>>() {}.getType();
-        flats = new Gson().fromJson(json, itemsHashMapType);
-        flats.values().forEach(flat -> ids.add(flat.getId()));
+    }
+
+    private Flat createFlatFromResult(ResultSet result) throws SQLException {
+        int id = result.getInt("id");
+        String name = result.getString("name");
+        Coordinates coordinates = new Coordinates(
+                result.getLong("coordinateX"),
+                result.getFloat("coordinateY"));
+        LocalDateTime creationDate = LocalDateTime.of(
+                result.getDate("creationDate").toLocalDate(),
+                result.getTime("creationTime").toLocalTime());
+        Float area = result.getFloat("area");
+        Integer rooms = result.getInt("rooms");
+        Furnish furnish = Furnish.valueOf(result.getString("furnish"));
+        View view = View.valueOf(result.getString("view"));
+        Transport transport = Transport.valueOf(result.getString("transport"));
+        House house = new House(
+                result.getString("houseName"),
+                result.getLong("houseYear"),
+                result.getLong("houseElevators"));
+
+        return new Flat(id, name, coordinates, creationDate, area, rooms, furnish, view, transport, house);
     }
 
     public void clear() {
         flats.clear();
-        ids.clear();
     }
 
     public HashMap<Integer, Flat> getFlats() {
@@ -42,12 +55,7 @@ public class FlatHashMap {
         return initTime;
     }
 
-    public String getFileName() {
-        return fileName;
-    }
-
     public void remove(int key) {
-        ids.remove(flats.get(key).getId());
         flats.remove(key);
     }
 
@@ -57,10 +65,16 @@ public class FlatHashMap {
 
     public void put(int key, Flat flat) {
         flats.put(key, flat);
-        ids.add(flat.getId());
     }
 
     public Flat get(int key) {
         return flats.get(key);
+    }
+
+    public HashMap<Integer, String> getOwners() {
+        return owners;
+    }
+    public void putOwners() {
+
     }
 }

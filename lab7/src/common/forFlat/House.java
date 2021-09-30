@@ -7,18 +7,18 @@ public class House implements Serializable {
     public static final Long MIN_YEAR = 0L;
     private final Long year;
     public static final long MIN_NUMBER_OF_LIFTS = 0L;
-    private final long numberOfLifts;
+    private final long elevators;
 
-    public House(String name, Long year, Long numberOfLifts) {
+    public House(String name, Long year, Long elevators) {
         this.name = name;
         this.year = year;
-        this.numberOfLifts = numberOfLifts;
+        this.elevators = elevators;
     }
 
     @Override
     public String toString() {
         return ((name == null) ? "" : "Название: " + name) +
                 ((year == null) ? "" : (name == null ? "" : ", ") + "Год: " + year) +
-                (((name == null && year == null) ? "" : ", ") + "Количество лифтов: " + numberOfLifts);
+                (((name == null && year == null) ? "" : ", ") + "Количество лифтов: " + elevators);
     }
 }

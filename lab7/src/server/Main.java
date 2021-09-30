@@ -17,25 +17,9 @@ import java.time.LocalDateTime;
 
 public class Main {
     public static void main(String[] args) {
-        //Инициализация коллекции
-        FlatHashMap flatHashMap;
-        try {
-            String fileName = args[0];
-            flatHashMap = new FlatHashMap(LocalDateTime.now(), fileName);
-        } catch (ArrayIndexOutOfBoundsException e) {
-            System.out.println(StringDye.red("Первым аргументом введите название коллекции."));
-            return;
-        } catch (FileNotFoundException e) {
-            System.out.println(StringDye.red("Файл не найден."));
-            return;
-        } catch (IOException e) {
-            System.out.println(StringDye.red("Ошибка чтения файла."));
-            return;
-        }
-
         // Инициализация БД
-        String localUrl = "jdbc:postgresql://localhost:5432/studs";
         String heliosUrl = "jdbc:postgresql://pg:5432/studs";
+        String localUrl = "jdbc:postgresql://localhost:54321/studs";
         String name, pass;
         Connection connection;
         try {
@@ -54,14 +38,23 @@ public class Main {
             System.out.println(StringDye.red("Не удалось достучаться до консоли."));
             return;
         } catch (SQLException e) {
-            System.out.printf(StringDye.red("Ошибка %s подключения к %s.%n"), e.getSQLState(), localUrl);
+            System.out.printf(StringDye.red("Ошибка %s подключения к базе данных.%n"), e.getSQLState());
+            return;
+        }
+
+        //Инициализация коллекции
+        FlatHashMap flatHashMap;
+        try {
+            flatHashMap = new FlatHashMap(LocalDateTime.now(), connection);
+        } catch (SQLException e) {
+            System.out.printf(StringDye.red("Ошибка %s инициализации коллекции.%n"), e.getSQLState());
             return;
         }
 
         //Инициализация порта
         int port = 1305;
         try {
-            port = Integer.parseInt(args[1]);
+            port = Integer.parseInt(args[0]);
             System.out.printf(StringDye.green("Подключение по порту %s.%n"), port);
         } catch (NumberFormatException e) {
             System.out.println(StringDye.red("Ошибка парсинга порта."));

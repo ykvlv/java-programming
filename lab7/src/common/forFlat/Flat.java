@@ -13,19 +13,19 @@ public class Flat implements Comparable<Flat>, Serializable {
     public static final Float MAX_AREA = 668F;
     private final Float area; //Поле НЕ может быть null
     public static final Integer MIN_NUMBER_OF_ROOMS = 0;
-    private final Integer numberOfRooms;
+    private final Integer rooms;
     private final Furnish furnish;
     private final View view;
     private final Transport transport;
     private final House house; //Поле НЕ может быть null
 
-    public Flat(int id, String name, Coordinates coordinates, LocalDateTime creationDate, Float area, Integer numberOfRooms, Furnish furnish, View view, Transport transport, House house) {
+    public Flat(int id, String name, Coordinates coordinates, LocalDateTime creationDate, Float area, Integer rooms, Furnish furnish, View view, Transport transport, House house) {
         this.id = id;
         this.name = name;
         this.coordinates = coordinates;
         this.creationDate = creationDate;
         this.area = area;
-        this.numberOfRooms = numberOfRooms;
+        this.rooms = rooms;
         this.furnish = furnish;
         this.view = view;
         this.transport = transport;
@@ -39,7 +39,7 @@ public class Flat implements Comparable<Flat>, Serializable {
                 "\n\tВладелец: " + name +
                 "\n\tКоординаты: " + coordinates.toString() +
                 "\n\tПлощадь: " + area +
-                "\n\tКоличество комнат: " + numberOfRooms +
+                "\n\tКоличество комнат: " + rooms +
                 ((furnish == null) ? "" : "\n\tОтделка: " + furnish) +
                 ((view == null) ? "" : "\n\tВид из окна: " + view) +
                 ((transport == null) ? "" : "\n\tТранспорт: " + transport) +
