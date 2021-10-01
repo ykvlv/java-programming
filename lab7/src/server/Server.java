@@ -32,16 +32,12 @@ public class Server {
                 //Чекер комманд на сервере
                 if (reader.ready()) {
                     String str = reader.readLine();
-                    switch (str) {
-                        case "save":
-                            commandExecutor.saveAll();
-                            break;
-                        case "exit":
-                            selector.close();
-                            reader.close();
-                            return;
-                        default:
-                            System.out.println(StringDye.yellow("Есть только save и exit"));
+                    if ("exit".equals(str)) {
+                        selector.close();
+                        reader.close();
+                        return;
+                    } else {
+                        System.out.println(StringDye.yellow("Есть только exit"));
                     }
                 }
                 continue;

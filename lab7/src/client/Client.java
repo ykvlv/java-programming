@@ -36,10 +36,10 @@ public class Client {
 
         if (response.getObject() != null && response.getObject().equals(username)) {
             // Пользователь существует
-            password = new String(console.readPassword("Введите пароль: "));
+            password = new String(console.readPassword("Введите пароль (Enter — отмена): "));
         } else {
             // Регистрация нового пользовтеля
-            System.out.println("Регистрация нового пользователя!\n");
+            System.out.println("Пользователь не найден! Регистрация");
             do {
                 password = new String(console.readPassword("Введите пароль (Enter — отмена): ")).trim();
                 if (password.equals("")) { return false; }
@@ -57,10 +57,11 @@ public class Client {
         response = deliveryHandler.receiveResponse();
         switch (response.getResponseType()) {
             case DONE:
-                System.out.printf(StringDye.green("Добро пожаловать %s!%n"), username);
+                System.out.println(StringDye.green((String) response.getObject()));
                 return true;
             case ERROR:
-                System.out.println(StringDye.red("Неверный пароль. Повторие попытку позже."));
+                System.out.println(StringDye.red((String) response.getObject()));
+                 return connect(console);
             default:
                 return false;
         }

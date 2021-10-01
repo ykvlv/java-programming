@@ -44,7 +44,6 @@ public class Main {
         } catch (IOException e) {
             System.out.println(StringDye.red("Ошибка подключения к серверу"));
         } catch (Exception e) {
-            e.printStackTrace();
             System.out.println(StringDye.red("Вы положили клиент. (oT-T)尸"));
         }
     }
