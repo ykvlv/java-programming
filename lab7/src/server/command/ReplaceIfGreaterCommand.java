@@ -13,7 +13,7 @@ public class ReplaceIfGreaterCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         if (params.length != 2) {
             return new Response(ResponseType.ERROR, "usage: replace_if_greater key value");
         }
@@ -24,6 +24,9 @@ public class ReplaceIfGreaterCommand implements Command {
             value = Integer.parseInt(params[1]);
         } catch (NumberFormatException e) {
             return new Response(ResponseType.ERROR, "Ключ и значение должны быть числом.");
+        }
+        if (!flatHashMap.getOwner(key).equals(login)) {
+            return new Response(ResponseType.ERROR, "Этот элемент вам не принадлежит");
         }
         Flat flat = flatHashMap.get(key);
         if (flat == null) {

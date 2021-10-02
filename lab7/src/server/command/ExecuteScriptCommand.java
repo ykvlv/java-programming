@@ -8,7 +8,7 @@ import java.io.FileNotFoundException;
 public class ExecuteScriptCommand implements Command {
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         try {
             return new Response(ResponseType.SCRIPT, params[0]);
         } catch (ArrayIndexOutOfBoundsException e) {

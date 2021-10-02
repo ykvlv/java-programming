@@ -14,7 +14,6 @@ public class FlatCreator {
     }
 
     public Flat createStandardFlat() throws InterruptedIOException {
-        int id = generateId();
         String name = requestName();
         Coordinates coordinates = requestCoordinates();
         Float area = requestArea();
@@ -24,17 +23,13 @@ public class FlatCreator {
         Transport transport = requestTransport();
         House house = requestHouse();
         LocalDateTime creationDate = LocalDateTime.now();
-        return new Flat(id, name, coordinates, creationDate, area, numberOfRooms, furnish, view, transport, house);
+        return new Flat(name, coordinates, creationDate, area, numberOfRooms, furnish, view, transport, house);
     }
 
     private void userInvitation(String string) {
         if (!inputHandler.isScriptMode()) {
             System.out.println(string);
         }
-    }
-
-    private int generateId() {
-        return new Random().nextInt(Integer.MAX_VALUE);
     }
 
     private String requestName() throws InterruptedIOException {
@@ -88,7 +83,7 @@ public class FlatCreator {
 
     private View requestView() throws InterruptedIOException {
         userInvitation("Вид из окон? (можно пропустить) Варианты:");
-        userInvitation(Arrays.toString(Furnish.values()));
+        userInvitation(Arrays.toString(View.values()));
 
         String string = inputHandler.chooseFromEnumValues(View.values(), true);
         return string == null ? null : View.valueOf(string);

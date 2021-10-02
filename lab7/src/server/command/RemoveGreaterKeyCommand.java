@@ -15,7 +15,7 @@ public class RemoveGreaterKeyCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         if (params.length != 1) {
             return new Response(ResponseType.ERROR, "usage: remove_greater_key value");
         }
@@ -30,7 +30,7 @@ public class RemoveGreaterKeyCommand implements Command {
                 .filter(curr_key -> curr_key > key)
                 .collect(Collectors.toSet());
         for (Integer illiquidKey : collect) {
-            flatHashMap.remove(illiquidKey);
+            flatHashMap.remove(illiquidKey, login);
         }
         return new Response(ResponseType.DONE, "Удаление прошло успешно");
     }

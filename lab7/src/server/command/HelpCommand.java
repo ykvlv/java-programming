@@ -15,7 +15,7 @@ public class HelpCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         Optional<String> string = cr.getCommands().entrySet().stream()
                 .map(x -> new Formatter().format("\n\t%-25s%s", x.getKey(), x.getValue().shortInfo()).toString())
                 .reduce((x, y) -> x + y);

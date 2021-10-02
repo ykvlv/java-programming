@@ -12,7 +12,7 @@ public class InsertCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         int key;
         if (params.length != 1) {
             return new Response(ResponseType.ERROR, "usage: insert key");

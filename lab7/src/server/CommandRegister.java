@@ -36,13 +36,13 @@ public class CommandRegister {
         }
     }
 
-    public Response decryptAndRun(String request) {
+    public Response decryptAndRun(String request, String login) {
         String[] commandAndParams = request.trim().split(" ");
         String command = commandAndParams[0].toLowerCase();
         String[] params = Arrays.copyOfRange(commandAndParams, 1, commandAndParams.length);
 
         if (commands.containsKey(command)) {
-            return commands.get(command).execute(params);
+            return commands.get(command).execute(params, login);
         } else {
             return new Response(ResponseType.ERROR, "Команды нет в списке, " + possibleCommand(command));
         }

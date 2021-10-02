@@ -12,7 +12,7 @@ public class RemoveKeyCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         if (params.length != 1) {
             return new Response(ResponseType.ERROR, "usage: remove_key key");
         }
@@ -23,8 +23,11 @@ public class RemoveKeyCommand implements Command {
             return new Response(ResponseType.ERROR, "Ключ должен быть числом.");
         }
         if (flatHashMap.containsKey(key)) {
-            flatHashMap.remove(key);
-            return new Response(ResponseType.DONE, "Элемент с ключом " + key + " удален");
+            if (flatHashMap.remove(key, login)) {
+                return new Response(ResponseType.DONE, "Элемент с ключом " + key + " удален");
+            } else {
+                return new Response(ResponseType.ERROR, "Этот элемент вам не принадлежит");
+            }
         } else {
             return new Response(ResponseType.ERROR, "Элемента с таким ключом нету.");
         }

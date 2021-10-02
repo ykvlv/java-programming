@@ -17,13 +17,13 @@ public class Client {
         this.responseHandler = responseHandler;
     }
 
-    public boolean connect(Console console) throws IOException, ClassNotFoundException {
+    public String connect(Console console) throws IOException, ClassNotFoundException {
         String username = console.readLine("Введите имя пользователя: ").trim();
         if (username.equals("")) {
-            return false;
+            return null;
         }
         // Существует ли пользователь?
-        deliveryHandler.sendRequest(new Request(RequestType.TOUCH, username));
+        deliveryHandler.sendRequest(new Request(RequestType.TOUCH, username, username));
         Response response = deliveryHandler.receiveResponse();
         String password;
         String repeatPassword;
@@ -31,21 +31,23 @@ public class Client {
             if (response.getResponseType() == ResponseType.ERROR) {
                 System.out.println((String) response.getObject());
             }
-            return false;
+            return null;
         }
 
         if (response.getObject() != null && response.getObject().equals(username)) {
             // Пользователь существует
-            password = new String(console.readPassword("Введите пароль (Enter — отмена): "));
+            password = new String(console.readPassword("Введите пароль (Enter — отмена): ")).trim();
+            if (password.equals("")) {
+                return null;
+            }
         } else {
             // Регистрация нового пользовтеля
             System.out.println("Пользователь не найден! Регистрация");
             do {
                 password = new String(console.readPassword("Введите пароль (Enter — отмена): ")).trim();
-                if (password.equals("")) { return false; }
+                if (password.equals("")) { return null; }
                 repeatPassword = new String(console.readPassword("Повторите пароль: ")).trim();
-                if (repeatPassword.equals("")) { return false; }
-
+                if (repeatPassword.equals("")) { return null; }
                 if (!password.equals(repeatPassword)) {
                     System.out.println(StringDye.yellow("Пароли отличаются!"));
                 }
@@ -53,29 +55,29 @@ public class Client {
         }
 
         // Отправить запрос на авторизацию
-        deliveryHandler.sendRequest(new Request(RequestType.AUTH, username, password));
+        deliveryHandler.sendRequest(new Request(RequestType.AUTH, password, username));
         response = deliveryHandler.receiveResponse();
         switch (response.getResponseType()) {
             case DONE:
                 System.out.println(StringDye.green((String) response.getObject()));
-                return true;
+                return username;
             case ERROR:
                 System.out.println(StringDye.red((String) response.getObject()));
-                 return connect(console);
+                return connect(console);
             default:
-                return false;
+                return null;
         }
     }
 
-    public void run(InputHandler inputHandler) {
+    public void run(InputHandler inputHandler, String login) {
         while (true) {
             System.out.print(inputHandler.isScriptMode() ? "" : "% ");
             try {
                 String command = inputHandler.nextLine();
-                Request request = new Request(RequestType.COMMAND, command);
+                Request request = new Request(RequestType.COMMAND, command, login);
                 deliveryHandler.sendRequest(request);
                 Response response = deliveryHandler.receiveResponse();
-                responseHandler.process(response);
+                responseHandler.process(response, login);
             } catch (NoSuchElementException e) {
                 inputHandler.switchScript();
             } catch (SocketTimeoutException e) {

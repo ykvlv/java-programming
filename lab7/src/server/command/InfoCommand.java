@@ -14,7 +14,7 @@ public class InfoCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         return new Response(ResponseType.DONE,
                 "Информация о коллекции:\n" +
                 "\tВремя инициализации: " + flatHashMap.getInitTime()

@@ -14,7 +14,7 @@ public class FilterContainsName implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         if (params.length != 1) {
             return new Response(ResponseType.ERROR, "usage: filter_contains_name name");
         }

@@ -11,7 +11,7 @@ public class UpdateCommand implements Command {
         this.flatHashMap = flatHashMap;
     }
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         if (params.length != 1) {
             return new Response(ResponseType.ERROR, "Первым аргументом вводится key.");
         }
@@ -23,6 +23,8 @@ public class UpdateCommand implements Command {
         }
         if (!flatHashMap.containsKey(key)) {
             return new Response(ResponseType.ERROR, "Элемента с данным ключом нет в коллекции. Воспользуйтесь \"insert\"");
+        } else if (!flatHashMap.getOwner(key).equals(login)) {
+            return new Response(ResponseType.ERROR, "Этот элемент вам не принадлежит");
         }
         return new Response(ResponseType.REQUEST_ITEM, key);
     }

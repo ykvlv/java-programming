@@ -34,15 +34,16 @@ public class Main {
         Client client = new Client(deliveryHandler, responseHandler);
 
         try {
-            if (client.connect(console)) {
-                client.run(inputHandler);
+            String login = client.connect(console);
+            if (login != null) {
+                client.run(inputHandler, login);
             } else {
                 System.out.println(StringDye.red("Авторизация прервана"));
             }
         } catch (ClassNotFoundException e) {
-            System.out.println(StringDye.red("Ошибка распаковки ответа."));
+            System.out.println(StringDye.red("Ошибка распаковки ответа"));
         } catch (IOException e) {
-            System.out.println(StringDye.red("Ошибка подключения к серверу"));
+            System.out.println(StringDye.red("Нет ответа сервера"));
         } catch (Exception e) {
             System.out.println(StringDye.red("Вы положили клиент. (oT-T)尸"));
         }

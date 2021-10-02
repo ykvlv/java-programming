@@ -19,4 +19,12 @@ public class Coordinates implements Serializable {
         return "X:" + x +
                 ", Y:" + y;
     }
+
+    public float getY() {
+        return y;
+    }
+
+    public long getX() {
+        return x;
+    }
 }

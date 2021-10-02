@@ -8,10 +8,7 @@ import common.forFlat.Flat;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Connection;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.Random;
 
 public class CommandExecutor {
@@ -28,28 +25,28 @@ public class CommandExecutor {
     public Response execute(Request request) {
         switch (request.getRequestType()) {
             case COMMAND:
-                return execute((String) request.getObject());
+                return commandRegister.decryptAndRun((String) request.getObject(), request.getLogin());
             case SEND_ITEM:
-                return add((Flat) request.getObject(), (Integer) request.getExtra());
+                return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin());
             case TOUCH:
                 return touch((String) request.getObject());
             case AUTH:
-                return authorization((String) request.getObject(), (String) request.getExtra());
+                return authorization((String) request.getObject(), request.getLogin());
             default:
                 return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
         }
     }
 
-    private Response add(Flat flat, Integer key) {
-        flatHashMap.put(key, flat);
-        return new Response(ResponseType.DONE, "Элемент добавлен");
+    private Response add(Flat flat, Integer key, String login) {
+        if (flatHashMap.put(key, flat, login)) {
+            return new Response(ResponseType.DONE, "Элемент добавлен");
+        } else {
+            return new Response(ResponseType.ERROR, "Элемент не добавлен. Вот дела...");
+        }
     }
 
-    private Response execute(String args) {
-        return commandRegister.decryptAndRun(args);
-    }
 
-    private Response authorization(String login, String password) {
+    private Response authorization(String password, String login) {
         String pepper = "pososi";
         try {
             MessageDigest md = MessageDigest.getInstance("MD5");
@@ -72,10 +69,10 @@ public class CommandExecutor {
                         "INTO users (login, salt, hash) " +
                         "VALUES ('" + login + "', '" + salt + "', '" + hash + "')");
                 statement.close();
-                return new Response(ResponseType.DONE, "Добро пожаловать, " + login + "!");
+                return new Response(ResponseType.DONE, "Удачная регистрация, " + login + "!");
             } else {
                 Statement statement = connection.createStatement();
-                statement.executeQuery("SELECT * FROM users where login like '" + login + "'");
+                statement.executeQuery("SELECT * FROM users where login = '" + login + "'");
                 ResultSet result = statement.getResultSet();
                 result.next();
                 String dataBaseHash = result.getString("hash");
@@ -103,7 +100,7 @@ public class CommandExecutor {
     // returns login if found, otherwise return null
     private String getLogin(String login) throws SQLException {
         Statement statement = connection.createStatement();
-        statement.executeQuery("SELECT login FROM users WHERE login like '" + login + "'");
+        statement.executeQuery("SELECT login FROM users WHERE login = '" + login + "'");
         ResultSet result = statement.getResultSet();
         String dbLogin = null;
         if (result.next()) {

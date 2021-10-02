@@ -14,9 +14,9 @@ public class ShowCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         Optional<String> string = flatHashMap.getFlats().entrySet().stream()
-                .map(x -> x.getKey() + ":\n" + x.getValue().toString())
+                .map(flatEntry -> flatEntry.getKey() + " (" + flatHashMap.getOwner(flatEntry.getKey()) + "):\n" + flatEntry.getValue().toString())
                 .reduce((x, y) -> x + "\n" + y);
         return new Response(ResponseType.DONE, string.orElse("Коллекция пустая."));
     }

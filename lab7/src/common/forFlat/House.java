@@ -21,4 +21,16 @@ public class House implements Serializable {
                 ((year == null) ? "" : (name == null ? "" : ", ") + "Год: " + year) +
                 (((name == null && year == null) ? "" : ", ") + "Количество лифтов: " + elevators);
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public Long getYear() {
+        return year;
+    }
+
+    public long getElevators() {
+        return elevators;
+    }
 }

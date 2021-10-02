@@ -19,7 +19,7 @@ public class Main {
     public static void main(String[] args) {
         // Инициализация БД
         String heliosUrl = "jdbc:postgresql://pg:5432/studs";
-        String localUrl = "jdbc:postgresql://localhost:54232/studs";
+        String localUrl = "jdbc:postgresql://localhost:54393/studs";
         String name, pass;
         Connection connection;
         try {

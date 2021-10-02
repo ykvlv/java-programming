@@ -16,7 +16,7 @@ public class PrintDescendingCommand implements Command {
     }
 
     @Override
-    public Response execute(String[] params) {
+    public Response execute(String[] params, String login) {
         Optional<String> string = flatHashMap.getFlats().entrySet()
                 .stream()
                 .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
