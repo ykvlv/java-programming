@@ -12,6 +12,7 @@ import java.sql.*;
 import java.util.Random;
 
 public class CommandExecutor {
+    private final String pepper = "pososi";
     private final CommandRegister commandRegister;
     private final FlatHashMap flatHashMap;
     private final Connection connection;
@@ -26,18 +27,39 @@ public class CommandExecutor {
         if (request == null) {
             return new Response(ResponseType.ERROR, "Неверный запрос");
         }
-        switch (request.getRequestType()) {
-            case COMMAND:
-                return commandRegister.decryptAndRun((String) request.getObject(), request.getLogin());
-            case SEND_ITEM:
-                return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin());
-            case TOUCH:
-                return touch((String) request.getObject());
-            case AUTH:
-                return authorization((String) request.getObject(), request.getLogin());
-            default:
-                return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
+        try {
+            switch (request.getRequestType()) {
+                case COMMAND: // read lock
+                    if (passwordInvalid(request.getLogin(), request.getPassword())) {
+                        return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
+                    }
+                    return executeCommand((String) request.getObject(), request.getLogin());
+                case SEND_ITEM: // write lock
+                    if (passwordInvalid(request.getLogin(), request.getPassword())) {
+                        return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
+                    }
+                    return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin());
+                case TOUCH:
+                    return touch(request.getLogin());
+                case AUTH:
+                    return authorization(request.getLogin(), request.getPassword());
+                default:
+                    return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
+            }
+        } catch (SQLException | NoSuchAlgorithmException throwables) {
+            return new Response(ResponseType.ERROR, "Не могу проверить действительность пароля");
         }
+    }
+
+    private boolean passwordInvalid(String login, String password) throws SQLException, NoSuchAlgorithmException {
+        if (login == null || password == null) {
+            return true;
+        }
+        return !passwordMatches(login, password);
+    }
+
+    private Response executeCommand(String request, String login) {
+        return commandRegister.decryptAndRun(request, login);
     }
 
     private Response add(Flat flat, Integer key, String login) {
@@ -49,12 +71,11 @@ public class CommandExecutor {
     }
 
 
-    private Response authorization(String password, String login) {
-        String pepper = "pososi";
+    private Response authorization(String login, String password) {
         try {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
             if (getLogin(login) == null) {
-                // генерация хеша через md5 с солью и перцем
+                // РЕГИСТРАЦИЯ. генерация хеша через md5 с солью и перцем
+                MessageDigest md = MessageDigest.getInstance("SHA-256");
                 String salt = new Random()
                         .ints(48, 122 + 1)
                         .filter(i -> (i <= 57 || i >= 65) && (i <= 90 || i >= 97))
@@ -74,21 +95,7 @@ public class CommandExecutor {
                 statement.close();
                 return new Response(ResponseType.DONE, "Удачная регистрация, " + login + "!");
             } else {
-                Statement statement = connection.createStatement();
-                statement.executeQuery("SELECT * FROM users where login = '" + login + "'");
-                ResultSet result = statement.getResultSet();
-                result.next();
-                String dataBaseHash = result.getString("hash");
-                String salt = statement.getResultSet().getString("salt");
-
-                byte[] hashInBytes = md.digest((pepper + password + salt).getBytes(StandardCharsets.UTF_8));
-                StringBuilder hash = new StringBuilder();
-                for (byte hashInByte : hashInBytes)
-                    hash.append(Integer.toString((hashInByte & 0xff) + 0x100, 16).substring(1));
-
-                result.close();
-                statement.close();
-                if (hash.toString().equals(dataBaseHash)) {
+                if (passwordMatches(login, password)) {
                     return new Response(ResponseType.DONE, "Добро пожаловать, " + login + "!");
                 } else {
                     return new Response(ResponseType.ERROR, "Неверный пароль! Повторите попытку.");
@@ -98,6 +105,25 @@ public class CommandExecutor {
             e.printStackTrace();
             return new Response(ResponseType.ERROR, "Ошибка на стороне сервера.");
         }
+    }
+
+    private boolean passwordMatches(String login, String password) throws NoSuchAlgorithmException, SQLException {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        Statement statement;
+        statement = connection.createStatement();
+        statement.executeQuery("SELECT * FROM users where login = '" + login + "'");
+        ResultSet result = statement.getResultSet();
+        result.next();
+        String dataBaseHash = result.getString("hash");
+        String salt = statement.getResultSet().getString("salt");
+
+        byte[] hashInBytes = md.digest((pepper + password + salt).getBytes(StandardCharsets.UTF_8));
+        StringBuilder hash = new StringBuilder();
+        for (byte hashInByte : hashInBytes)
+            hash.append(Integer.toString((hashInByte & 0xff) + 0x100, 16).substring(1));
+        result.close();
+        statement.close();
+        return hash.toString().equals(dataBaseHash);
     }
 
     // returns login if found, otherwise return null

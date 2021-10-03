@@ -11,19 +11,24 @@ import java.util.NoSuchElementException;
 public class Client {
     private final DeliveryHandler deliveryHandler;
     private final ResponseHandler responseHandler;
+    private String login;
 
     public Client(DeliveryHandler deliveryHandler, ResponseHandler responseHandler) {
         this.deliveryHandler = deliveryHandler;
         this.responseHandler = responseHandler;
     }
 
+    public String getLogin() {
+        return login;
+    }
+
     public String connect(Console console) throws IOException, ClassNotFoundException {
-        String username = console.readLine("Введите имя пользователя: ").trim();
-        if (username.equals("")) {
+        String login = console.readLine("Введите имя пользователя: ").trim();
+        if (login.equals("")) {
             return null;
         }
         // Существует ли пользователь?
-        deliveryHandler.sendRequest(new Request(RequestType.TOUCH, username, username));
+        deliveryHandler.sendRequest(new Request(RequestType.TOUCH, login));
         Response response = deliveryHandler.receiveResponse();
         String password;
         String repeatPassword;
@@ -34,7 +39,7 @@ public class Client {
             return null;
         }
 
-        if (response.getObject() != null && response.getObject().equals(username)) {
+        if (response.getObject() != null && response.getObject().equals(login)) {
             // Пользователь существует
             password = new String(console.readPassword("Введите пароль (Enter — отмена): ")).trim();
             if (password.equals("")) {
@@ -55,12 +60,13 @@ public class Client {
         }
 
         // Отправить запрос на авторизацию
-        deliveryHandler.sendRequest(new Request(RequestType.AUTH, password, username));
+        deliveryHandler.sendRequest(new Request(RequestType.AUTH, login, password));
         response = deliveryHandler.receiveResponse();
         switch (response.getResponseType()) {
             case DONE:
                 System.out.println(StringDye.green((String) response.getObject()));
-                return username;
+                this.login = login;
+                return password;
             case ERROR:
                 System.out.println(StringDye.red((String) response.getObject()));
                 return connect(console);
@@ -69,15 +75,15 @@ public class Client {
         }
     }
 
-    public void run(InputHandler inputHandler, String login) {
+    public void run(InputHandler inputHandler, String login, String password) {
         while (true) {
             System.out.print(inputHandler.isScriptMode() ? "" : "% ");
             try {
                 String command = inputHandler.nextLine();
-                Request request = new Request(RequestType.COMMAND, command, login);
+                Request request = new Request(RequestType.COMMAND, login, password, command);
                 deliveryHandler.sendRequest(request);
                 Response response = deliveryHandler.receiveResponse();
-                responseHandler.process(response, login);
+                responseHandler.process(response, login, password);
             } catch (NoSuchElementException e) {
                 inputHandler.switchScript();
             } catch (SocketTimeoutException e) {

@@ -34,9 +34,9 @@ public class Main {
         Client client = new Client(deliveryHandler, responseHandler);
 
         try {
-            String login = client.connect(console);
-            if (login != null) {
-                client.run(inputHandler, login);
+            String password = client.connect(console);
+            if (password != null) {
+                client.run(inputHandler, client.getLogin(), password);
             } else {
                 System.out.println(StringDye.red("Авторизация прервана"));
             }

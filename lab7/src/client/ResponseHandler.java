@@ -20,7 +20,7 @@ public class ResponseHandler {
         this.flatCreator = flatCreator;
     }
 
-    public void process(Response response, String login) {
+    public void process(Response response, String login, String password) {
         switch (response.getResponseType()) {
             case DONE:
                 System.out.println((String) response.getObject());
@@ -31,7 +31,7 @@ public class ResponseHandler {
             case REQUEST_ITEM:
                 try {
                     Flat flat = flatCreator.createStandardFlat();
-                    sendElement(flat, (Integer) response.getObject(), login);
+                    sendElement(flat, (Integer) response.getObject(), login, password);
                 } catch (InterruptedIOException e) {
                     System.out.println(StringDye.yellow("Создание элемента коллекции прервано."));
                 } catch (IOException e) {
@@ -50,10 +50,10 @@ public class ResponseHandler {
         }
     }
 
-    private void sendElement(Flat flat, Integer key, String login) throws IOException, ClassNotFoundException {
-        Request request = new Request(RequestType.SEND_ITEM, flat, key, login);
+    private void sendElement(Flat flat, Integer key, String login, String password) throws IOException, ClassNotFoundException {
+        Request request = new Request(RequestType.SEND_ITEM, login, password, flat, key);
         deliveryHandler.sendRequest(request);
-        process(deliveryHandler.receiveResponse(), login);
+        process(deliveryHandler.receiveResponse(), login, password);
     }
 
     private void executeScript(String fileName) throws FileNotFoundException {
