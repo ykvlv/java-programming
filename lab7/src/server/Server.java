@@ -12,6 +12,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.RecursiveTask;
 
 public class Server {
     private final Selector selector;
@@ -53,7 +55,7 @@ public class Server {
                 if (key.isValid()) {
                     if (key.isReadable()) {
                         //Прочитать канал и достать запрос
-                        Request request = serverIOHandler.readFrom((DatagramChannel) key.channel());
+                        Request request = readRequest((DatagramChannel) key.channel());
                         key.attach(request);
                         key.interestOps(SelectionKey.OP_WRITE);
 
@@ -72,6 +74,20 @@ public class Server {
                 it.remove();
             }
         }
+    }
+
+    public Request readRequest(DatagramChannel channel) {
+        ForkJoinPool forkJoinPool = new ForkJoinPool();
+        return forkJoinPool.invoke(new RecursiveTask<Request>() {
+            @Override
+            protected Request compute() {
+                try {
+                    return serverIOHandler.readFrom(channel);
+                } catch (IOException | ClassNotFoundException e) {
+                    return null;
+                }
+            }
+        });
     }
 
     public void sendResponse(Response response, DatagramChannel channel, SocketAddress address) {

@@ -23,6 +23,9 @@ public class CommandExecutor {
     }
 
     public Response execute(Request request) {
+        if (request == null) {
+            return new Response(ResponseType.ERROR, "Неверный запрос");
+        }
         switch (request.getRequestType()) {
             case COMMAND:
                 return commandRegister.decryptAndRun((String) request.getObject(), request.getLogin());
