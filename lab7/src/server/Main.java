@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
     public static void main(String[] args) {
@@ -76,7 +77,8 @@ public class Main {
 
             ServerIOHandler serverIOHandler = new ServerIOHandler();
             CommandRegister commandRegister = new CommandRegister(flatHashMap);
-            CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap, connection);
+            ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
+            CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap, connection, reentrantReadWriteLock);
 
             Server server = new Server(selector, serverIOHandler, commandExecutor, reader);
             System.out.println("Запуск сервера.");

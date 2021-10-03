@@ -10,14 +10,17 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Random;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class CommandExecutor {
     private final String pepper = "pososi";
     private final CommandRegister commandRegister;
     private final FlatHashMap flatHashMap;
     private final Connection connection;
+    private final ReentrantReadWriteLock reentrantReadWriteLock;
 
-    public CommandExecutor(CommandRegister commandRegister, FlatHashMap flatHashMap, Connection connection) {
+    public CommandExecutor(CommandRegister commandRegister, FlatHashMap flatHashMap, Connection connection, ReentrantReadWriteLock reentrantReadWriteLock) {
+        this.reentrantReadWriteLock = reentrantReadWriteLock;
         this.flatHashMap = flatHashMap;
         this.commandRegister = commandRegister;
         this.connection = connection;
@@ -27,27 +30,17 @@ public class CommandExecutor {
         if (request == null) {
             return new Response(ResponseType.ERROR, "Неверный запрос");
         }
-        try {
-            switch (request.getRequestType()) {
-                case COMMAND: // read lock
-                    if (passwordInvalid(request.getLogin(), request.getPassword())) {
-                        return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
-                    }
-                    return executeCommand((String) request.getObject(), request.getLogin());
-                case SEND_ITEM: // write lock
-                    if (passwordInvalid(request.getLogin(), request.getPassword())) {
-                        return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
-                    }
-                    return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin());
-                case TOUCH:
-                    return touch(request.getLogin());
-                case AUTH:
-                    return authorization(request.getLogin(), request.getPassword());
-                default:
-                    return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
-            }
-        } catch (SQLException | NoSuchAlgorithmException throwables) {
-            return new Response(ResponseType.ERROR, "Не могу проверить действительность пароля");
+        switch (request.getRequestType()) {
+            case COMMAND:
+                return executeCommand((String) request.getObject(), request.getLogin(), request.getPassword());
+            case SEND_ITEM:
+                return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin(), request.getPassword());
+            case TOUCH:
+                return touch(request.getLogin());
+            case AUTH:
+                return authorization(request.getLogin(), request.getPassword());
+            default:
+                return new Response(ResponseType.ERROR, "Ало клиент а что тебе надо?");
         }
     }
 
@@ -58,12 +51,40 @@ public class CommandExecutor {
         return !passwordMatches(login, password);
     }
 
-    private Response executeCommand(String request, String login) {
-        return commandRegister.decryptAndRun(request, login);
+    private Response executeCommand(String request, String login, String password) {
+        try {
+            if (passwordInvalid(login, password)) {
+                return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
+            }
+        } catch (SQLException | NoSuchAlgorithmException e) {
+            return new Response(ResponseType.ERROR, "Не удалось проверить ваш пароль.");
+        }
+        reentrantReadWriteLock.readLock().lock();
+        Response response;
+        try {
+            response = commandRegister.decryptAndRun(request, login);
+        } finally {
+            reentrantReadWriteLock.readLock().unlock();
+        }
+        return response;
     }
 
-    private Response add(Flat flat, Integer key, String login) {
-        if (flatHashMap.put(key, flat, login)) {
+    private Response add(Flat flat, Integer key, String login, String password) {
+        try {
+            if (passwordInvalid(login, password)) {
+                return new Response(ResponseType.ERROR, "Ваш пароль недействителен");
+            }
+        } catch (SQLException | NoSuchAlgorithmException e) {
+            return new Response(ResponseType.ERROR, "Не удалось проверить ваш пароль.");
+        }
+        reentrantReadWriteLock.writeLock().lock();
+        boolean b;
+        try {
+            b = flatHashMap.put(key, flat, login);
+        } finally {
+            reentrantReadWriteLock.writeLock().unlock();
+        }
+        if (b) {
             return new Response(ResponseType.DONE, "Элемент добавлен");
         } else {
             return new Response(ResponseType.ERROR, "Элемент не добавлен. Вот дела...");

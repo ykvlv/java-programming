@@ -107,10 +107,8 @@ public class FlatHashMap {
             preparedStatement.setTime(6, Time.valueOf(flat.getCreationDateTime().toLocalTime()));
             preparedStatement.setFloat(7, flat.getArea());
             if (flat.getRooms() == null) {
-                System.out.println("румы нулл");
                 preparedStatement.setNull(8, Types.INTEGER);
             } else {
-                System.out.printf("румы есть %d%n", flat.getRooms());
                 preparedStatement.setInt(8, flat.getRooms());
             }
             if (flat.getFurnish() == null) {
@@ -130,10 +128,8 @@ public class FlatHashMap {
             }
             preparedStatement.setString(12, flat.getHouse().getName());
             if (flat.getHouse().getYear() == null) {
-                System.out.println("год нулл");
                 preparedStatement.setNull(13, Types.REAL);
             } else {
-                System.out.printf("год есть %d%n", flat.getHouse().getYear());
                 preparedStatement.setLong(13, flat.getHouse().getYear());
             }
             preparedStatement.setLong(14, flat.getHouse().getElevators());
