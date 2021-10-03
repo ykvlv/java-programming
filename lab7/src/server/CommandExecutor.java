@@ -52,7 +52,7 @@ public class CommandExecutor {
     private Response authorization(String password, String login) {
         String pepper = "pososi";
         try {
-            MessageDigest md = MessageDigest.getInstance("MD5");
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
             if (getLogin(login) == null) {
                 // генерация хеша через md5 с солью и перцем
                 String salt = new Random()

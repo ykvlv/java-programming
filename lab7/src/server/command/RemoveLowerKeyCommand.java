@@ -34,6 +34,7 @@ public class RemoveLowerKeyCommand implements Command {
                 .collect(Collectors.toSet());
         for (Integer illiquidKey : collect) {
             flatHashMap.remove(illiquidKey, login);
+            flatHashMap.removeOwner(illiquidKey);
         }
         return new Response(ResponseType.DONE, "Удаление прошло успешно");
     }

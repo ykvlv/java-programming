@@ -44,7 +44,7 @@ public class FlatHashMap {
         House house = new House(
                 result.getString("houseName"),
                 result.getLong("houseYear"),
-                result.getLong("houseElevators") == 0 ? null : result.getLong("houseElevators"));
+                result.getLong("houseElevators"));
         return new Flat(id, name, coordinates, creationDate, area, rooms, furnish, view, transport, house);
     }
 
@@ -54,7 +54,6 @@ public class FlatHashMap {
                 remove(entry.getKey(), login);
             }
         }
-        flats.entrySet().removeIf(e -> owners.get(e.getKey()).equals(login));
         owners.entrySet().removeIf(e -> e.getValue().equals(login));
     }
 
@@ -74,11 +73,14 @@ public class FlatHashMap {
                 e.printStackTrace();
             }
             flats.remove(key);
-            owners.remove(key);
             return true;
         } else {
             return false;
         }
+    }
+
+    public void removeOwner(Integer key) {
+        owners.remove(key);
     }
 
     public boolean containsKey(int key) {

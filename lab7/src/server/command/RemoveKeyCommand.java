@@ -24,6 +24,7 @@ public class RemoveKeyCommand implements Command {
         }
         if (flatHashMap.containsKey(key)) {
             if (flatHashMap.remove(key, login)) {
+                flatHashMap.removeOwner(key);
                 return new Response(ResponseType.DONE, "Элемент с ключом " + key + " удален");
             } else {
                 return new Response(ResponseType.ERROR, "Этот элемент вам не принадлежит");
