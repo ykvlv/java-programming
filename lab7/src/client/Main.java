@@ -23,6 +23,7 @@ public class Main {
 
         SocketAddress address = new InetSocketAddress(InetAddress.getLocalHost(), port);
         DatagramSocket socket = new DatagramSocket();
+        socket.setSoTimeout(2000);
 
         Console console = System.console();
         Scanner scanner = new Scanner(System.in);
@@ -45,6 +46,7 @@ public class Main {
         } catch (IOException e) {
             System.out.println(StringDye.red("Нет ответа сервера"));
         } catch (Exception e) {
+            e.printStackTrace();
             System.out.println(StringDye.red("Вы положили клиент. (oT-T)尸"));
         }
     }

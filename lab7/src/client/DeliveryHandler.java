@@ -19,10 +19,13 @@ public class DeliveryHandler {
     }
 
     public Response receiveResponse() throws IOException, ClassNotFoundException {
-        byte[] b = new byte[8192];
+        byte[] b = new byte[65536];
         DatagramPacket packet = new DatagramPacket(b, b.length);
-        socket.setSoTimeout(2000);
-        socket.receive(packet);
+        try {
+            socket.receive(packet);
+        } catch (SocketTimeoutException e) {
+            return null;
+        }
         ByteArrayInputStream byteArrayIS = new ByteArrayInputStream(b);
         ObjectInputStream objectIS = new ObjectInputStream(byteArrayIS);
         byteArrayIS.close();

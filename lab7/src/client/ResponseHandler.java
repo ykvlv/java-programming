@@ -7,6 +7,7 @@ import common.StringDye;
 import common.forFlat.Flat;
 
 import java.io.*;
+import java.net.SocketTimeoutException;
 import java.util.Scanner;
 
 public class ResponseHandler {
@@ -21,6 +22,10 @@ public class ResponseHandler {
     }
 
     public void process(Response response, String login, String password) {
+        if (response == null) {
+            System.out.println(StringDye.yellow("Ошибка получения ответа"));
+            return;
+        }
         switch (response.getResponseType()) {
             case DONE:
                 System.out.println((String) response.getObject());
@@ -53,7 +58,18 @@ public class ResponseHandler {
     private void sendElement(Flat flat, Integer key, String login, String password) throws IOException, ClassNotFoundException {
         Request request = new Request(RequestType.SEND_ITEM, login, password, flat, key);
         deliveryHandler.sendRequest(request);
-        process(deliveryHandler.receiveResponse(), login, password);
+        Response response = null;
+        for (int i = 0; i <= 6; i++) {
+            response = deliveryHandler.receiveResponse();
+            if (i == 6 && response == null) {
+                throw new SocketTimeoutException();
+            } else if (response == null) {
+                System.out.println(StringDye.yellow("Нет ответа от сервера"));
+            } else {
+                break;
+            }
+        }
+        process(response, login, password);
     }
 
     private void executeScript(String fileName) throws FileNotFoundException {

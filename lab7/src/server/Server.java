@@ -2,6 +2,7 @@ package server;
 
 import common.Request;
 import common.Response;
+import common.ResponseType;
 import common.StringDye;
 
 import java.io.BufferedReader;
@@ -12,6 +13,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.RecursiveTask;
 
@@ -20,8 +23,10 @@ public class Server {
     private final ServerIOHandler serverIOHandler;
     private final CommandExecutor commandExecutor;
     private final BufferedReader reader;
+    private final ExecutorService fixedThreadPool;
 
-    public Server(Selector selector, ServerIOHandler serverIOHandler, CommandExecutor commandExecutor, BufferedReader reader) {
+    public Server(Selector selector, ServerIOHandler serverIOHandler, CommandExecutor commandExecutor, BufferedReader reader, ExecutorService fixedThreadPool) {
+        this.fixedThreadPool = fixedThreadPool;
         this.selector = selector;
         this.reader = reader;
         this.serverIOHandler = serverIOHandler;
@@ -30,7 +35,7 @@ public class Server {
 
     public boolean isExit() throws IOException {
         while (reader.ready()) {
-            String str = reader.readLine();
+            String str = reader.readLine().trim();
             if ("exit".equals(str)) {
                 selector.close();
                 reader.close();
@@ -62,8 +67,8 @@ public class Server {
                     } else if (key.isWritable()) {
                         //Выполнить и отправить запрос закрепленный за ключом
                         Request request = (Request) key.attachment();
-                        Response response = commandExecutor.execute(request);
-                        System.out.println(response.getResponseType());
+
+                        Response response = executeRequest(request);
 
                         sendResponse(response, (DatagramChannel) key.channel(), request.getAddress());
                         key.interestOps(SelectionKey.OP_READ);
@@ -74,6 +79,17 @@ public class Server {
                 it.remove();
             }
         }
+    }
+
+    public Response executeRequest(Request request) {
+        Response response = null;
+        try {
+            response = fixedThreadPool.submit(() -> commandExecutor.execute(request)).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        System.out.print(response != null ? response.getResponseType() + "\n" : "");
+        return response;
     }
 
     public Request readRequest(DatagramChannel channel) {
@@ -91,10 +107,15 @@ public class Server {
     }
 
     public void sendResponse(Response response, DatagramChannel channel, SocketAddress address) {
+        if (response == null) {
+            response = new Response(ResponseType.ERROR, "Сегодня ты без ответа");
+        }
+        Response finalResponse = response;
         new Thread(() -> {
             try {
-                serverIOHandler.writeTo(response, channel, address);
+                serverIOHandler.writeTo(finalResponse, channel, address);
             } catch (IOException e) {
+                e.printStackTrace();
                 System.out.println(StringDye.yellow("Не удалось отправить ответ"));
             }
         }).start();
