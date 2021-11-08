@@ -31,9 +31,9 @@ public class CommandExecutor {
             return new Response(ResponseType.ERROR, "Неверный запрос");
         }
         switch (request.getRequestType()) {
-            case COMMAND: //read lock
+            case COMMAND:
                 return executeCommand((String) request.getObject(), request.getLogin(), request.getPassword());
-            case SEND_ITEM: //write lock
+            case SEND_ITEM:
                 return add((Flat) request.getObject(), (Integer) request.getExtra(), request.getLogin(), request.getPassword());
             case TOUCH:
                 return touch(request.getLogin());
@@ -77,14 +77,8 @@ public class CommandExecutor {
         } catch (SQLException | NoSuchAlgorithmException e) {
             return new Response(ResponseType.ERROR, "Не удалось проверить ваш пароль.");
         }
-        boolean b;
         reentrantReadWriteLock.writeLock().lock();
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            return new Response(ResponseType.ERROR, "дай поспать");
-        }
-
+        boolean b;
         try {
             b = flatHashMap.put(key, flat, login);
         } finally {

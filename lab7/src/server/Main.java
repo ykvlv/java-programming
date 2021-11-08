@@ -14,8 +14,6 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class Main {
@@ -81,9 +79,8 @@ public class Main {
             CommandRegister commandRegister = new CommandRegister(flatHashMap);
             ReentrantReadWriteLock reentrantReadWriteLock = new ReentrantReadWriteLock();
             CommandExecutor commandExecutor = new CommandExecutor(commandRegister, flatHashMap, connection, reentrantReadWriteLock);
-            ExecutorService fixedThreadPool = Executors.newFixedThreadPool(2);
 
-            Server server = new Server(selector, serverIOHandler, commandExecutor, reader, fixedThreadPool);
+            Server server = new Server(selector, serverIOHandler, commandExecutor, reader);
             System.out.println("Запуск сервера.");
             server.run();
 

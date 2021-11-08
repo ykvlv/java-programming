@@ -82,27 +82,15 @@ public class Client {
                 String command = inputHandler.nextLine();
                 Request request = new Request(RequestType.COMMAND, login, password, command);
                 deliveryHandler.sendRequest(request);
-                Response response = null;
-                for (int i = 0; i <= 5; i++) {
-                    response = deliveryHandler.receiveResponse();
-                    if (i == 5 && response == null) {
-                        throw new SocketTimeoutException();
-                    } else if (response == null) {
-                        System.out.println(StringDye.yellow("Нет ответа от сервера"));
-                    } else {
-                        break;
-                    }
-                }
+                Response response = deliveryHandler.receiveResponse();
                 responseHandler.process(response, login, password);
             } catch (NoSuchElementException e) {
                 inputHandler.switchScript();
             } catch (SocketTimeoutException e) {
-                System.out.println(StringDye.red("Превышено время ожидания от сервера"));
-                return;
+                System.out.println(StringDye.yellow("Превышено время ожидания от сервера"));
             } catch (InterruptedIOException e) {
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
                 System.out.println(StringDye.yellow("Ошибка приема/передачи."));
             } catch (ClassNotFoundException e) {
                 System.out.println(StringDye.yellow("Ошибка распаковки ответа."));

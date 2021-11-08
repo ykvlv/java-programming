@@ -16,11 +16,6 @@ public class HelpCommand implements Command {
 
     @Override
     public Response execute(String[] params, String login) {
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            return new Response(ResponseType.ERROR, "дай поспать");
-        }
         Optional<String> string = cr.getCommands().entrySet().stream()
                 .map(x -> new Formatter().format("\n\t%-25s%s", x.getKey(), x.getValue().shortInfo()).toString())
                 .reduce((x, y) -> x + y);
